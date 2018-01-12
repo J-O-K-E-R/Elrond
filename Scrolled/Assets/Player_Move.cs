@@ -7,8 +7,10 @@ public class Player_Move: MonoBehaviour {
 	public int playerSpeed = 10;
 	private bool facingRight = true;
 	public int playerJumpP = 1250;
-	private float moveX;
-    bool isgrounded = true;
+	public float moveX;
+    public Vector2 move;
+    public int jumpcount = 2;
+    public bool isfalling = false;
     private Rigidbody2D rb;
     // Use this for initialization
 
@@ -25,11 +27,13 @@ public class Player_Move: MonoBehaviour {
     void PlayerMove() {
 		//Controls
 		moveX = Input.GetAxis("Horizontal");
+        move = rb.velocity;
 
-        if(isgrounded == true) {
+        if(jumpcount > 0) {
             if (Input.GetButtonDown("Jump"))
             {
                 Jump();
+                jumpcount--;
             }
         }
         
@@ -43,11 +47,25 @@ public class Player_Move: MonoBehaviour {
 		}
         //Physics
         rb.velocity = new Vector2(moveX * playerSpeed, rb.velocity.y);
+
+        if (move.y < 0) // if the player has started falling, reset their jumps once they hit the ground
+        {
+            isfalling = true;
+        }
+        if (isfalling) 
+        {
+            if (move.y == 0)
+            {
+                jumpcount = 2;
+                isfalling = false;
+            }
+        }
     }
 
     void Jump() {
         //Jumping Code
         rb.AddForce(Vector2.up * playerJumpP, ForceMode2D.Force);
+        
     }
 	void FlipPlayer() {
         facingRight = !facingRight;
