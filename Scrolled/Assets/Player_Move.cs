@@ -3,22 +3,29 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Player_Move : MonoBehaviour {
+
 	public int playerSpeed = 10;
-	private bool facingRight = false;
-	public int playerJumpP = 10;
+	private bool facingRight = true;
+	public int playerJumpP = 1250;
 	private float moveX;
-	// Use this for initialization
-	//void Start () {
-		
-	//}
-	
-	// Update is called once per frame
-	void Update () {
+    private float moveY;
+    private Rigidbody2D rb;
+    // Use this for initialization
+
+    void Start () {
+        rb = gameObject.GetComponent<Rigidbody2D>();
+    }
+
+    // Update is called once per frame
+    void Update () {
 		PlayerMove();
-	}
-	void PlayerMove() {
+        
+
+    }
+    void PlayerMove() {
 		//Controls
 		moveX = Input.GetAxis("Horizontal");
+        moveY = Input.GetAxis("Vertical");
         if (Input.GetButtonDown("Jump")) {
             Jump();
         }
@@ -31,13 +38,13 @@ public class Player_Move : MonoBehaviour {
 			FlipPlayer();
 		}
         //Physics
-        gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(moveX * playerSpeed, gameObject.GetComponent<Rigidbody2D>().velocity.y);
-	}
+        rb.velocity = new Vector2(moveX * playerSpeed, rb.velocity.y);
+    }
 
 	void Jump() {
         //Jumping Code
-        GetComponent<Rigidbody2D>().AddForce(Vector2.up * playerJumpP);
-	}
+        rb.AddForce(Vector2.up * playerJumpP, ForceMode2D.Force);
+    }
 	void FlipPlayer() {
         facingRight = !facingRight;
         Vector2 localScale = gameObject.transform.localScale;
