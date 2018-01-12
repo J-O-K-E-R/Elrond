@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player_Move : MonoBehaviour {
+public class Player_Move: MonoBehaviour {
 
 	public int playerSpeed = 10;
 	private bool facingRight = true;
 	public int playerJumpP = 1250;
 	private float moveX;
-    private float moveY;
+    bool isgrounded = true;
     private Rigidbody2D rb;
     // Use this for initialization
 
@@ -25,10 +25,14 @@ public class Player_Move : MonoBehaviour {
     void PlayerMove() {
 		//Controls
 		moveX = Input.GetAxis("Horizontal");
-        moveY = Input.GetAxis("Vertical");
-        if (Input.GetButtonDown("Jump")) {
-            Jump();
+
+        if(isgrounded == true) {
+            if (Input.GetButtonDown("Jump"))
+            {
+                Jump();
+            }
         }
+        
 		//Animations
 
 		//PlayerDirection
@@ -41,7 +45,7 @@ public class Player_Move : MonoBehaviour {
         rb.velocity = new Vector2(moveX * playerSpeed, rb.velocity.y);
     }
 
-	void Jump() {
+    void Jump() {
         //Jumping Code
         rb.AddForce(Vector2.up * playerJumpP, ForceMode2D.Force);
     }
