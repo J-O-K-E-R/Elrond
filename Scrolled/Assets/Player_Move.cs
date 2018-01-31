@@ -4,73 +4,81 @@ using UnityEngine;
 
 public class Player_Move: MonoBehaviour {
 
-	public int playerSpeed = 10;
-	private bool facingRight = true;
-	public int playerJumpP = 1250;
-	public float moveX;
-    public Vector2 move;
-    public int jumpcount = 2;
-    public bool isfalling = false;
-    private Rigidbody2D rb;
+	public float playerSpeed = 5;
+    public float jumpSpeed = 10;
+    public float maxSpeed = 10;
+    private bool facingRight = false;
+
+    public bool isTouchingGround;
+    public Transform groundCheckPoint;
+    public float groundCheckRadius = 0.520512f;
+    public LayerMask groundLayer;
+
+    public int jumpcount = 1;
+    private Rigidbody2D rb2d;
+    private Animator anim;
     // Use this for initialization
 
     void Start () {
-        rb = gameObject.GetComponent<Rigidbody2D>();
+        rb2d = GetComponent<Rigidbody2D>();
+        anim = GetComponent<Animator>();
     }
 
     // Update is called once per frame
     void Update () {
-		PlayerMove();
         
+    }
 
+    void FixedUpdate()
+    {
+        isTouchingGround = Physics2D.OverlapCircle(groundCheckPoint.position, groundCheckRadius, groundLayer);
+        PlayerMove();
     }
     void PlayerMove() {
-		//Controls
-		moveX = Input.GetAxis("Horizontal");
-        move = rb.velocity;
 
-        if(jumpcount > 0) {
-            if (Input.GetButtonDown("Jump"))
-            {
-                Jump();
+        float movement = Input.GetAxis("Horizontal");
+        anim.SetFloat("Speed", Mathf.Abs(movement));
+        anim.SetBool("OnGround", isTouchingGround);
+
+        if (rb2d.velocity.magnitude > maxSpeed) {
+            rb2d.velocity = rb2d.velocity.normalized * maxSpeed;
+        }
+        
+        if (movement > 0f) {
+            rb2d.velocity = new Vector2(movement * playerSpeed, rb2d.velocity.y);
+        }
+        else if (movement < 0f) {
+            rb2d.velocity = new Vector2(movement * playerSpeed, rb2d.velocity.y);
+        }
+        else {
+            rb2d.velocity = new Vector2(0, rb2d.velocity.y);
+        }
+        if (Input.GetButtonDown("Jump")&& isTouchingGround) { 
+            rb2d.velocity = new Vector2(rb2d.velocity.x, jumpSpeed);
+            jumpcount--;
+        }
+        if (Input.GetButtonDown("Jump") && !isTouchingGround) {
+            if (jumpcount >= 1) {
                 jumpcount--;
+                rb2d.velocity = new Vector2(rb2d.velocity.x, jumpSpeed);
             }
         }
-        
-		//Animations
-
-		//PlayerDirection
-		if(moveX < 0.0f && facingRight == false){
-			FlipPlayer();
-		} else if (moveX > 0.0f && facingRight == true) {
-			FlipPlayer();
-		}
-        //Physics
-        rb.velocity = new Vector2(moveX * playerSpeed, rb.velocity.y);
-
-        if (move.y < 0) // if the player has started falling, reset their jumps once they hit the ground
-        {
-            isfalling = true;
+        if (isTouchingGround) {
+            Debug.Log("");
+            jumpcount = 1;
         }
-        if (isfalling) 
-        {
-            if (move.y == 0)
-            {
-                jumpcount = 2;
-                isfalling = false;
-            }
-        }
-    }
 
-    void Jump() {
-        //Jumping Code
-        rb.AddForce(Vector2.up * playerJumpP, ForceMode2D.Force);
-        
+
+        if (movement > 0 && !facingRight)
+            FlipPlayer();
+        else if (movement < 0 && facingRight)
+            FlipPlayer();
     }
-	void FlipPlayer() {
-        facingRight = !facingRight;
-        Vector2 localScale = gameObject.transform.localScale;
-        localScale.x *= -1;
-        transform.localScale = localScale;
-	}
+    void FlipPlayer() {
+           facingRight = !facingRight;
+           Vector2 localScale = gameObject.transform.localScale;
+           localScale.x *= -1;
+           transform.localScale = localScale;
+    }
+ 
 }
