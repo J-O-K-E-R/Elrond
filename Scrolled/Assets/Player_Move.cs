@@ -30,13 +30,13 @@ public class Player_Move: MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-        
+        PlayerMove();
     }
 
     void FixedUpdate()
     {
         isTouchingGround = Physics2D.OverlapCircle(groundCheckPoint.position, groundCheckRadius, groundLayer);
-        PlayerMove();
+        
     }
     void PlayerMove() {
 
@@ -68,7 +68,6 @@ public class Player_Move: MonoBehaviour {
             }
         }
         if (isTouchingGround) {
-            Debug.Log("");
             jumpcount = 1;
         }
 

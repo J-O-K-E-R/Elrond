@@ -6,7 +6,7 @@ public class CameraSystem : MonoBehaviour {
 
     public GameObject player;
     public float offset = 1.8f;
-    public float offsetSmooth = 1.8f;
+    public float offsetSmooth = 1f;
     private Vector3 playerPosition;
     // Use this for initialization
     void Start() {
