@@ -17,11 +17,15 @@ public class Player_Move: MonoBehaviour {
     public int jumpcount = 1;
     private Rigidbody2D rb2d;
     private Animator anim;
-    // Use this for initialization
+
+    public Vector3 respawnPoint;
 
     void Start () {
         rb2d = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+        groundCheckPoint = transform.Find("GroundCheckPoint");
+        groundLayer = 1 << 8;
+        respawnPoint = GameObject.FindGameObjectWithTag("Respawn").transform.position;
     }
 
     // Update is called once per frame
@@ -80,5 +84,11 @@ public class Player_Move: MonoBehaviour {
            localScale.x *= -1;
            transform.localScale = localScale;
     }
- 
+
+    void OnTriggerEnter2D(Collider2D other) {
+        if(other.tag == "FallDetector") {
+            //what will happen when player enters fall detector zone
+            transform.position = respawnPoint;
+        }
+    }
 }
